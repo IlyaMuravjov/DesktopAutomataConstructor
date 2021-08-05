@@ -3,7 +3,7 @@ using ControlsLibrary.Model.TransitionProperty;
 
 namespace ControlsLibrary.Model
 {
-    public interface IAutomatonComponent
+    public interface IAutomatonMemory
     {
         public IReadOnlyList<IReadOnlyList<ITransitionPropertyDescriptor>> FilterDescriptors { get; }
         public IReadOnlyList<IReadOnlyList<ITransitionPropertyDescriptor>> SideEffectDescriptors { get; }
@@ -11,6 +11,6 @@ namespace ControlsLibrary.Model
         public bool IsReadyToTerminate { get; }
         public bool RequiresTermination { get; }
         public void TakeTransition(Transition transition);
-        public IAutomatonComponent Copy();
+        public IAutomatonMemory Copy();
     }
 }

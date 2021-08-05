@@ -6,13 +6,13 @@ using ControlsLibrary.Model.TransitionStorages;
 
 namespace ControlsLibrary.Model
 {
-    public class EditableAutomaton
+    public class Automaton
     {
         private readonly ISet<long> usedStateIDs = new HashSet<long>();
 
-        // intended type `Dictionary<Func<EditableAutomaton, T>, T>` isn't representable in C# type system
-        private readonly Dictionary<object, object> analyzers = new Dictionary<object, object>();
-        public IReadOnlyList<IAutomatonComponent> Components { get; }
+        // intended type `Dictionary<Func<Automaton, T>, T>` isn't representable in C# type system
+        private readonly Dictionary<object, object> components = new Dictionary<object, object>();
+        public IReadOnlyList<IAutomatonMemory> MemoryList { get; }
         private readonly Dictionary<State, TransitionStorageFacade> transitions = new Dictionary<State, TransitionStorageFacade>();
         public IReadOnlyDictionary<State, TransitionStorageFacade> Transitions => transitions;
         public IReadOnlyCollection<State> States => transitions.Keys;
@@ -23,9 +23,9 @@ namespace ControlsLibrary.Model
         public event ElementAdded<Transition> TransitionAdded;
         public event ElementRemoved<Transition> TransitionRemoved;
 
-        public EditableAutomaton(IReadOnlyList<IAutomatonComponent> components)
+        public Automaton(IReadOnlyList<IAutomatonMemory> memoryList)
         {
-            Components = components;
+            MemoryList = memoryList;
         }
 
         public void AddState(State state)
@@ -35,7 +35,7 @@ namespace ControlsLibrary.Model
             usedStateIDs.Add(id);
             state.ID = id;
             state.Name ??= "S" + id;
-            transitions[state] = new TransitionStorageFacade(Components);
+            transitions[state] = new TransitionStorageFacade(MemoryList);
             incomingTransitions[state] = new HashSet<Transition>();
             StateAdded?.Invoke(this, new ElementAddedEventArgs<State>(state));
         }
@@ -55,8 +55,8 @@ namespace ControlsLibrary.Model
             var transition = new Transition(
                 source,
                 target,
-                Components.SelectMany(component => component.FilterDescriptors).ToList(),
-                Components.SelectMany(component => component.SideEffectDescriptors).ToList()
+                MemoryList.SelectMany(memory => memory.FilterDescriptors).ToList(),
+                MemoryList.SelectMany(memory => memory.SideEffectDescriptors).ToList()
             );
             transitions[source].AddTransition(transition);
             incomingTransitions[target].Add(transition);
@@ -71,14 +71,14 @@ namespace ControlsLibrary.Model
             TransitionRemoved?.Invoke(this, new ElementRemovedEventArgs<Transition>(transition));
         }
 
-        public T GetAnalyzer<T>(Func<EditableAutomaton, T> analyzerFactory)
+        public T GetComponent<T>(Func<Automaton, T> componentFactory)
         {
-            if (!analyzers.ContainsKey(analyzerFactory))
+            if (!components.ContainsKey(componentFactory))
             {
-                analyzers[analyzerFactory] = analyzerFactory(this);
+                components[componentFactory] = componentFactory(this);
             }
 
-            return (T) analyzers[analyzerFactory];
+            return (T) components[componentFactory];
         }
     }
 }

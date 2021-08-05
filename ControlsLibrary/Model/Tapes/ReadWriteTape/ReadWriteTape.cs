@@ -44,6 +44,6 @@ namespace ControlsLibrary.Model.Tapes.ReadWriteTape
             }
         }
 
-        public override IAutomatonComponent Copy() => new ReadWriteTape(this);
+        public override IAutomatonMemory Copy() => new ReadWriteTape(this);
     }
 }

@@ -3,16 +3,16 @@ using System.Linq;
 using ControlsLibrary.Infrastructure.Events;
 using GraphX.Common;
 
-namespace ControlsLibrary.Model.Analyzers
+namespace ControlsLibrary.Model.Components
 {
     public abstract class BaseStateFinder
     {
-        protected EditableAutomaton Automaton { get; }
+        protected Automaton Automaton { get; }
 
         private readonly HashSet<State> matchingStates;
         public IReadOnlyCollection<State> MatchingStates => matchingStates;
 
-        protected BaseStateFinder(EditableAutomaton automaton)
+        protected BaseStateFinder(Automaton automaton)
         {
             Automaton = automaton;
             matchingStates = Automaton.States.Where(IsMatchingState).ToHashSet();

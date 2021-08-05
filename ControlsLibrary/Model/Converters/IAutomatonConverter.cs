@@ -4,7 +4,7 @@ namespace ControlsLibrary.Model.Converters
 {
     public interface IAutomatonConverter
     {
-        public bool IsCompatibleWithComponents(IReadOnlyList<IAutomatonComponent> components);
-        public EditableAutomaton Convert(EditableAutomaton automaton);
+        public bool IsCompatibleWithMemory(IReadOnlyList<IAutomatonMemory> memoryList);
+        public Automaton Convert(Automaton automaton);
     }
 }

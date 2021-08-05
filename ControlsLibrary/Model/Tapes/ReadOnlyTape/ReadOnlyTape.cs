@@ -26,6 +26,6 @@ namespace ControlsLibrary.Model.Tapes.ReadOnlyTape
             }
         }
 
-        public override IAutomatonComponent Copy() => new ReadOnlyTape(this);
+        public override IAutomatonMemory Copy() => new ReadOnlyTape(this);
     }
 }

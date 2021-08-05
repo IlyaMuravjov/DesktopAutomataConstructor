@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using ControlsLibrary.Infrastructure;
-using ControlsLibrary.Model.Analyzers;
 using GraphX.Common;
 
-namespace ControlsLibrary.Model.Executable
+namespace ControlsLibrary.Model.Components.Executor
 {
-    public class ExecutableAutomaton : BaseNotifyPropertyChanged
+    public class AutomatonExecutor : BaseNotifyPropertyChanged
     {
-        private readonly EditableAutomaton editableAutomaton;
-        public ObservableCollection<AutomatonComputationalPath> ComputationalPaths { get; }
+        private readonly Automaton automaton;
+        public ObservableCollection<AutomatonComputationPath> ComputationPaths { get; }
 
         private ExecutionStatusEnum status;
 
@@ -21,20 +20,22 @@ namespace ControlsLibrary.Model.Executable
             private set => Set(ref status, value);
         }
 
-        public ExecutableAutomaton(EditableAutomaton editableAutomaton)
+        public AutomatonExecutor(Automaton automaton)
         {
-            if (!editableAutomaton.IsExecutable())
+            if (!automaton.IsExecutable())
             {
                 throw new InvalidOperationException(); // TODO error message
             }
 
-            this.editableAutomaton = editableAutomaton;
-            ComputationalPaths = new ObservableCollection<AutomatonComputationalPath>(
-                editableAutomaton.GetInitialStates()
-                    .Select(state => new AutomatonComputationalPath(editableAutomaton.Components, state))
+            this.automaton = automaton;
+            ComputationPaths = new ObservableCollection<AutomatonComputationPath>(
+                automaton.GetInitialStates()
+                    .Select(state => new AutomatonComputationPath(automaton.MemoryList, state))
             );
             UpdateStatus();
         }
+
+        public static AutomatonExecutor Create(Automaton automaton) => new AutomatonExecutor(automaton);
 
         public void Run()
         {
@@ -47,12 +48,12 @@ namespace ControlsLibrary.Model.Executable
 
         public void TakeStep()
         {
-            var forks = new List<AutomatonComputationalPath>();
-            var runningPaths = ComputationalPaths.Where(path => path.Status == ExecutionStatusEnum.Running).ToList();
+            var forks = new List<AutomatonComputationPath>();
+            var runningPaths = ComputationPaths.Where(path => path.Status == ExecutionStatusEnum.Running).ToList();
             runningPaths.ForEach(runningPath => runningPath.State.IsCurrent = false);
             runningPaths.ForEach(runningPath =>
             {
-                var transitions = editableAutomaton.Transitions[runningPath.State].GetPossibleTransitions(runningPath.Components);
+                var transitions = automaton.Transitions[runningPath.State].GetPossibleTransitions(runningPath.MemoryList);
                 if (transitions.Count == 0)
                 {
                     runningPath.GoToFailedState();
@@ -63,21 +64,21 @@ namespace ControlsLibrary.Model.Executable
                         .Skip(1)
                         .ForEach(transition =>
                         {
-                            var fork = new AutomatonComputationalPath(runningPath);
+                            var fork = new AutomatonComputationPath(runningPath);
                             fork.TakeTransition(transition);
                             forks.Add(fork);
                         });
                     runningPath.TakeTransition(transitions.First());
                 }
             });
-            forks.ForEach(fork => ComputationalPaths.Add(fork));
+            forks.ForEach(fork => ComputationPaths.Add(fork));
             UpdateStatus();
         }
 
         private void UpdateStatus()
         {
-            Status = ComputationalPaths.Any(path => path.Status == ExecutionStatusEnum.Accepted) ? ExecutionStatusEnum.Accepted :
-                ComputationalPaths.Any(path => path.Status == ExecutionStatusEnum.Running) ? ExecutionStatusEnum.Running :
+            Status = ComputationPaths.Any(path => path.Status == ExecutionStatusEnum.Accepted) ? ExecutionStatusEnum.Accepted :
+                ComputationPaths.Any(path => path.Status == ExecutionStatusEnum.Running) ? ExecutionStatusEnum.Running :
                 ExecutionStatusEnum.Rejected;
         }
     }

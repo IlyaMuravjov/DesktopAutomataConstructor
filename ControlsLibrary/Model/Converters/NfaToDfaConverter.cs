@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using ControlsLibrary.Model.Analyzers;
+using ControlsLibrary.Model.Components;
 using ControlsLibrary.Model.Tapes.ReadOnlyTape;
 using GraphX.Common;
 
@@ -10,19 +10,19 @@ namespace ControlsLibrary.Model.Converters
 {
     public class NfaToDfaConverter : IAutomatonConverter
     {
-        public bool IsCompatibleWithComponents(IReadOnlyList<IAutomatonComponent> components) =>
-            components.Count == 1 && components[0] is ReadOnlyTape;
+        public bool IsCompatibleWithMemory(IReadOnlyList<IAutomatonMemory> memoryList) =>
+            memoryList.Count == 1 && memoryList[0] is ReadOnlyTape;
 
-        public EditableAutomaton Convert(EditableAutomaton nfa)
+        public Automaton Convert(Automaton nfa)
         {
-            Debug.Assert(IsCompatibleWithComponents(nfa.Components));
-            var tape = (ReadOnlyTape) nfa.Components[0];
+            Debug.Assert(IsCompatibleWithMemory(nfa.MemoryList));
+            var tape = (ReadOnlyTape) nfa.MemoryList[0];
             if (!nfa.IsExecutable() || nfa.GetNonDeterministicStates().Count == 0)
             {
                 throw new InvalidOperationException(); // TODO error message
             }
 
-            var dfa = new EditableAutomaton(nfa.Components);
+            var dfa = new Automaton(nfa.MemoryList);
 
             var unhandledQueue = new Queue<(HashSet<State>, State)>();
             var handledStates = new HashSet<State>();
@@ -78,7 +78,7 @@ namespace ControlsLibrary.Model.Converters
         }
 
         // TODO move it elsewhere since EpsilonClosure can be used for different tasks (e.g. "Step with closure")
-        private static HashSet<State> EpsilonClosure(EditableAutomaton automaton, IEnumerable<State> states)
+        private static HashSet<State> EpsilonClosure(Automaton automaton, IEnumerable<State> states)
         {
             var handledStates = new HashSet<State>();
             var unhandledStateQueue = new Queue<State>(states);

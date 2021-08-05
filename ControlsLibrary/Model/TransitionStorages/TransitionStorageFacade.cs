@@ -10,10 +10,10 @@ namespace ControlsLibrary.Model.TransitionStorages
         private readonly ITransitionStorage transitionStorage;
         public event EventHandler<EventArgs> TransitionFilterModified;
 
-        public TransitionStorageFacade(IReadOnlyList<IAutomatonComponent> components)
+        public TransitionStorageFacade(IReadOnlyList<IAutomatonMemory> memoryList)
         {
-            transitionStorage = components
-                .SelectMany(component => component.FilterDescriptors)
+            transitionStorage = memoryList
+                .SelectMany(memory => memory.FilterDescriptors)
                 .Flatten()
                 .Aggregate(
                     (Func<ITransitionStorage>) (() => new LeafTransitionStorage()),
@@ -67,7 +67,7 @@ namespace ControlsLibrary.Model.TransitionStorages
         }
 
         // if we ask for (1,0,0) then (1, null (epsilon), 0) will suffice
-        public IReadOnlyCollection<Transition> GetPossibleTransitions(IReadOnlyList<IAutomatonComponent> components) =>
-            transitionStorage.GetPossibleTransitions(components.SelectMany(component => component.CurrentFilters).Flatten().ToList(), 0);
+        public IReadOnlyCollection<Transition> GetPossibleTransitions(IReadOnlyList<IAutomatonMemory> memoryList) =>
+            transitionStorage.GetPossibleTransitions(memoryList.SelectMany(memory => memory.CurrentFilters).Flatten().ToList(), 0);
     }
 }

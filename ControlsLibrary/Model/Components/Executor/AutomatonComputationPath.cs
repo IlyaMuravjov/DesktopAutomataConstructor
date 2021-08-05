@@ -3,9 +3,9 @@ using System.Linq;
 using ControlsLibrary.Infrastructure;
 using GraphX.Common;
 
-namespace ControlsLibrary.Model.Executable
+namespace ControlsLibrary.Model.Components.Executor
 {
-    public class AutomatonComputationalPath : BaseNotifyPropertyChanged
+    public class AutomatonComputationPath : BaseNotifyPropertyChanged
     {
         private State state;
         private ExecutionStatusEnum status;
@@ -13,7 +13,7 @@ namespace ControlsLibrary.Model.Executable
 
         public IReadOnlyList<State> StateHistory => stateHistory;
 
-        public IReadOnlyList<IAutomatonComponent> Components { get; }
+        public IReadOnlyList<IAutomatonMemory> MemoryList { get; }
 
         public State State
         {
@@ -36,17 +36,17 @@ namespace ControlsLibrary.Model.Executable
             private set => Set(ref status, value);
         }
 
-        public AutomatonComputationalPath(IReadOnlyList<IAutomatonComponent> components, State initialState)
+        public AutomatonComputationPath(IReadOnlyList<IAutomatonMemory> memoryList, State initialState)
         {
-            Components = components.Select(component => component.Copy()).ToList();
+            MemoryList = memoryList.Select(memory => memory.Copy()).ToList();
             State = initialState;
             Status = ExecutionStatusEnum.Running;
             UpdateStatus();
         }
 
-        public AutomatonComputationalPath(AutomatonComputationalPath other)
+        public AutomatonComputationPath(AutomatonComputationPath other)
         {
-            Components = other.Components.Select(component => component.Copy()).ToList();
+            MemoryList = other.MemoryList.Select(memory => memory.Copy()).ToList();
             State = other.State;
             Status = other.Status;
             stateHistory = new List<State>(other.StateHistory);
@@ -55,17 +55,17 @@ namespace ControlsLibrary.Model.Executable
         public void TakeTransition(Transition transition)
         {
             State = transition.Target;
-            Components.ForEach(component => component.TakeTransition(transition));
+            MemoryList.ForEach(memory => memory.TakeTransition(transition));
             UpdateStatus();
         }
 
         private void UpdateStatus()
         {
-            if (state.IsFinal && Components.All(component => component.IsReadyToTerminate))
+            if (state.IsFinal && MemoryList.All(memory => memory.IsReadyToTerminate))
             {
                 Status = ExecutionStatusEnum.Accepted;
             }
-            else if (Components.Any(component => component.RequiresTermination))
+            else if (MemoryList.Any(memory => memory.RequiresTermination))
             {
                 Status = state.IsFinal ? ExecutionStatusEnum.Accepted : ExecutionStatusEnum.Rejected;
             }

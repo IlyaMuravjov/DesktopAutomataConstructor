@@ -7,7 +7,7 @@ using ControlsLibrary.Model.TransitionProperty.Impl;
 
 namespace ControlsLibrary.Model.Tapes
 {
-    public abstract class BaseTape : BaseNotifyPropertyChanged, IAutomatonComponent
+    public abstract class BaseTape : BaseNotifyPropertyChanged, IAutomatonMemory
     {
         private int position;
         public ObservableCollection<char> Data { get; }
@@ -38,6 +38,6 @@ namespace ControlsLibrary.Model.Tapes
         }
 
         public abstract void TakeTransition(Transition transition);
-        public abstract IAutomatonComponent Copy();
+        public abstract IAutomatonMemory Copy();
     }
 }
