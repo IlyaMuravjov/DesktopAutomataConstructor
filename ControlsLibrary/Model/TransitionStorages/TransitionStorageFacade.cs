@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using ControlsLibrary.Infrastructure;
 
-namespace ControlsLibrary.Model.TransitionCollections
+namespace ControlsLibrary.Model.TransitionStorages
 {
-    public class TransitionTable
+    public class TransitionStorageFacade
     {
         private readonly ITransitionStorage transitionStorage;
         public event EventHandler<EventArgs> TransitionFilterModified;
 
-        public TransitionTable(IReadOnlyList<IFaComponent> components)
+        public TransitionStorageFacade(IReadOnlyList<IAutomatonComponent> components)
         {
             transitionStorage = components
                 .SelectMany(component => component.FilterDescriptors)
@@ -67,11 +67,7 @@ namespace ControlsLibrary.Model.TransitionCollections
         }
 
         // if we ask for (1,0,0) then (1, null (epsilon), 0) will suffice
-        public IReadOnlyCollection<Transition> GetPossibleTransitions(IReadOnlyList<IFaComponent> components) =>
+        public IReadOnlyCollection<Transition> GetPossibleTransitions(IReadOnlyList<IAutomatonComponent> components) =>
             transitionStorage.GetPossibleTransitions(components.SelectMany(component => component.CurrentFilters).Flatten().ToList(), 0);
-
-        // if we ask for (1,0,0) then (1, null (epsilon), 0) won't suffice
-        public IReadOnlyCollection<Transition> GetTransitionsWithExactFilters(IReadOnlyList<IFaComponent> components) =>
-            transitionStorage.GetTransitionsWithExactFilters(components.SelectMany(component => component.CurrentFilters).Flatten().ToList(), 0);
     }
 }

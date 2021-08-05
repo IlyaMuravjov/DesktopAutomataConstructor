@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace ControlsLibrary.Model.Tape.ReadOnlyTape
+namespace ControlsLibrary.Model.Tapes.ReadOnlyTape
 {
     public class ReadOnlyTape : BaseTape
     {
@@ -25,6 +25,6 @@ namespace ControlsLibrary.Model.Tape.ReadOnlyTape
             }
         }
 
-        public override IFaComponent Copy() => new ReadOnlyTape(this);
+        public override IAutomatonComponent Copy() => new ReadOnlyTape(this);
     }
 }

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ControlsLibrary.Model.TransitionCollections
+namespace ControlsLibrary.Model.TransitionStorages
 {
     public interface ITransitionStorage
     {
@@ -19,7 +19,5 @@ namespace ControlsLibrary.Model.TransitionCollections
         public void RemoveTransition(Transition transition, IReadOnlyList<TransitionProperty> filterProperties, int propertyIndex);
 
         public IReadOnlyCollection<Transition> GetPossibleTransitions(IReadOnlyList<object> filterValues, int propertyIndex);
-
-        public IReadOnlyCollection<Transition> GetTransitionsWithExactFilters(IReadOnlyList<object> filterValues, int propertyIndex);
     }
 }

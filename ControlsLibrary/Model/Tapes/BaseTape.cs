@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using ControlsLibrary.Infrastructure;
 
-namespace ControlsLibrary.Model.Tape
+namespace ControlsLibrary.Model.Tapes
 {
-    public abstract class BaseTape : BaseNotifyPropertyChanged, IFaComponent
+    public abstract class BaseTape : BaseNotifyPropertyChanged, IAutomatonComponent
     {
         private int position;
         public ObservableCollection<char> Data { get; }
@@ -35,6 +35,6 @@ namespace ControlsLibrary.Model.Tape
         }
 
         public abstract void TakeTransition(Transition transition);
-        public abstract IFaComponent Copy();
+        public abstract IAutomatonComponent Copy();
     }
 }

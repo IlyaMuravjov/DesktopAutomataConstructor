@@ -7,17 +7,17 @@ namespace ControlsLibrary.Model.Analyzers
 {
     public abstract class BaseStateFinder
     {
-        protected EditableFa Fa { get; }
+        protected EditableAutomaton Automaton { get; }
 
         private readonly HashSet<State> matchingStates;
         public IReadOnlyCollection<State> MatchingStates => matchingStates;
 
-        protected BaseStateFinder(EditableFa fa)
+        protected BaseStateFinder(EditableAutomaton automaton)
         {
-            Fa = fa;
-            matchingStates = Fa.States.Where(IsMatchingState).ToHashSet();
-            fa.StateAdded += OnStateAdded;
-            fa.StateRemoved += OnStateRemoved;
+            Automaton = automaton;
+            matchingStates = Automaton.States.Where(IsMatchingState).ToHashSet();
+            automaton.StateAdded += OnStateAdded;
+            automaton.StateRemoved += OnStateRemoved;
         }
 
         protected abstract bool IsMatchingState(State state);
@@ -49,11 +49,11 @@ namespace ControlsLibrary.Model.Analyzers
         {
             void SubscribeToState(State state)
             {
-                Fa.Transitions[state].TransitionFilterModified += (sender, e) => Reanalyze(state);
+                Automaton.Transitions[state].TransitionFilterModified += (sender, e) => Reanalyze(state);
             }
 
-            Fa.StateAdded += (sender, e) => SubscribeToState(e.NewElement);
-            Fa.States.ForEach(SubscribeToState);
+            Automaton.StateAdded += (sender, e) => SubscribeToState(e.NewElement);
+            Automaton.States.ForEach(SubscribeToState);
         }
 
         protected void ReanalyzeOnPropertyChanged(string propertyName)
@@ -69,8 +69,8 @@ namespace ControlsLibrary.Model.Analyzers
                 };
             }
 
-            Fa.StateAdded += (sender, e) => SubscribeToState(e.NewElement);
-            Fa.States.ForEach(SubscribeToState);
+            Automaton.StateAdded += (sender, e) => SubscribeToState(e.NewElement);
+            Automaton.States.ForEach(SubscribeToState);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace ControlsLibrary.Model.Tape.ReadWriteTape
+﻿namespace ControlsLibrary.Model.Tapes.ReadWriteTape
 {
     public enum HeadMoveEnum
     {

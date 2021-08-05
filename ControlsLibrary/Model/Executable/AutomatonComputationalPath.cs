@@ -3,17 +3,17 @@ using System.Linq;
 using ControlsLibrary.Infrastructure;
 using GraphX.Common;
 
-namespace ControlsLibrary.Model
+namespace ControlsLibrary.Model.Executable
 {
-    public class SingleStateExecutableFa : BaseNotifyPropertyChanged
+    public class AutomatonComputationalPath : BaseNotifyPropertyChanged
     {
         private State state;
-        private FaStatusEnum status;
+        private ExecutionStatusEnum status;
         private readonly List<State> stateHistory = new List<State>();
 
         public IReadOnlyList<State> StateHistory => stateHistory;
 
-        public IReadOnlyList<IFaComponent> Components { get; }
+        public IReadOnlyList<IAutomatonComponent> Components { get; }
 
         public State State
         {
@@ -30,21 +30,21 @@ namespace ControlsLibrary.Model
             }
         }
 
-        public FaStatusEnum Status
+        public ExecutionStatusEnum Status
         {
             get => status;
             private set => Set(ref status, value);
         }
 
-        public SingleStateExecutableFa(IReadOnlyList<IFaComponent> components, State initialState)
+        public AutomatonComputationalPath(IReadOnlyList<IAutomatonComponent> components, State initialState)
         {
             Components = components.Select(component => component.Copy()).ToList();
             State = initialState;
-            Status = FaStatusEnum.Running;
+            Status = ExecutionStatusEnum.Running;
             UpdateStatus();
         }
 
-        public SingleStateExecutableFa(SingleStateExecutableFa other)
+        public AutomatonComputationalPath(AutomatonComputationalPath other)
         {
             Components = other.Components.Select(component => component.Copy()).ToList();
             State = other.State;
@@ -63,18 +63,18 @@ namespace ControlsLibrary.Model
         {
             if (state.IsFinal && Components.All(component => component.IsReadyToTerminate))
             {
-                Status = FaStatusEnum.Accepted;
+                Status = ExecutionStatusEnum.Accepted;
             }
             else if (Components.Any(component => component.RequiresTermination))
             {
-                Status = state.IsFinal ? FaStatusEnum.Accepted : FaStatusEnum.Rejected;
+                Status = state.IsFinal ? ExecutionStatusEnum.Accepted : ExecutionStatusEnum.Rejected;
             }
         }
 
         public void GoToFailedState()
         {
             State = null;
-            Status = FaStatusEnum.Rejected;
+            Status = ExecutionStatusEnum.Rejected;
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ControlsLibrary.Model.Tape.ReadWriteTape
+namespace ControlsLibrary.Model.Tapes.ReadWriteTape
 {
     public class ReadWriteTape : BaseTape
     {
@@ -41,6 +41,6 @@ namespace ControlsLibrary.Model.Tape.ReadWriteTape
             }
         }
 
-        public override IFaComponent Copy() => new ReadWriteTape(this);
+        public override IAutomatonComponent Copy() => new ReadWriteTape(this);
     }
 }

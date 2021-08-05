@@ -2,13 +2,13 @@ namespace ControlsLibrary.Model.Analyzers
 {
     public class NondeterministicStatesFinder : BaseStateFinder
     {
-        public NondeterministicStatesFinder(EditableFa fa) : base(fa)
+        public NondeterministicStatesFinder(EditableAutomaton automaton) : base(automaton)
         {
             ReanalyzeOnTransitionFilterModified();
         }
 
-        protected override bool IsMatchingState(State state) => !Fa.Transitions[state].IsDeterministic;
+        protected override bool IsMatchingState(State state) => !Automaton.Transitions[state].IsDeterministic;
 
-        public static NondeterministicStatesFinder Create(EditableFa fa) => new NondeterministicStatesFinder(fa);
+        public static NondeterministicStatesFinder Create(EditableAutomaton automaton) => new NondeterministicStatesFinder(automaton);
     }
 }

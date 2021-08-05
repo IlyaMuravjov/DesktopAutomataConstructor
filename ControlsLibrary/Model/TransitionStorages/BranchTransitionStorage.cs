@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ControlsLibrary.Model.TransitionCollections
+namespace ControlsLibrary.Model.TransitionStorages
 {
     public class BranchTransitionStorage : ITransitionStorage
     {
@@ -48,11 +48,7 @@ namespace ControlsLibrary.Model.TransitionCollections
                 ? epsilonTransitions
                 : epsilonTransitions.Concat(subStorage.GetPossibleTransitions(filterValues, propertyIndex + 1)).ToHashSet();
         }
-
-
-        public IReadOnlyCollection<Transition> GetTransitionsWithExactFilters(IReadOnlyList<object> filterValues, int propertyIndex) =>
-            GetSubStorage(filterValues[propertyIndex])?.GetTransitionsWithExactFilters(filterValues, propertyIndex + 1) ?? new HashSet<Transition>();
-
+        
         private ITransitionStorage GetSubStorage(object filterValue) =>
             filterValue == null ? epsilonSubStorage :
             subStorages.ContainsKey(filterValue) ? subStorages[filterValue] :

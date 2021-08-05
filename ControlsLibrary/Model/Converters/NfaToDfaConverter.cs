@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using ControlsLibrary.Model.Analyzers;
-using ControlsLibrary.Model.Tape.ReadOnlyTape;
+using ControlsLibrary.Model.Tapes.ReadOnlyTape;
 using GraphX.Common;
 
-namespace ControlsLibrary.Model.Converter
+namespace ControlsLibrary.Model.Converters
 {
-    public class NfaToDfaConverter : IFaConverter
+    public class NfaToDfaConverter : IAutomatonConverter
     {
-        public bool IsCompatibleWithComponents(IReadOnlyList<IFaComponent> components) =>
+        public bool IsCompatibleWithComponents(IReadOnlyList<IAutomatonComponent> components) =>
             components.Count == 1 && components[0] is ReadOnlyTape;
 
-        public EditableFa Convert(EditableFa nfa)
+        public EditableAutomaton Convert(EditableAutomaton nfa)
         {
             Debug.Assert(IsCompatibleWithComponents(nfa.Components));
             var tape = (ReadOnlyTape) nfa.Components[0];
@@ -22,7 +22,7 @@ namespace ControlsLibrary.Model.Converter
                 throw new InvalidOperationException(); // TODO error message
             }
 
-            var dfa = new EditableFa(nfa.Components);
+            var dfa = new EditableAutomaton(nfa.Components);
 
             var unhandledQueue = new Queue<(HashSet<State>, State)>();
             var handledStates = new HashSet<State>();
@@ -78,7 +78,7 @@ namespace ControlsLibrary.Model.Converter
         }
 
         // TODO move it elsewhere since EpsilonClosure can be used for different tasks (e.g. "Step with closure")
-        private static HashSet<State> EpsilonClosure(EditableFa fa, IEnumerable<State> states)
+        private static HashSet<State> EpsilonClosure(EditableAutomaton automaton, IEnumerable<State> states)
         {
             var handledStates = new HashSet<State>();
             var unhandledStateQueue = new Queue<State>(states);
@@ -90,7 +90,7 @@ namespace ControlsLibrary.Model.Converter
                     continue;
                 }
 
-                fa.Transitions[state].EpsilonTransitions
+                automaton.Transitions[state].EpsilonTransitions
                     .ForEach(transition => unhandledStateQueue.Enqueue(transition.Target));
             }
 

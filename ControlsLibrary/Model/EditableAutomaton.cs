@@ -1,20 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ControlsLibrary.Infrastructure.Events;
-using ControlsLibrary.Model.Analyzers;
-using ControlsLibrary.Model.TransitionCollections;
+using ControlsLibrary.Model.TransitionStorages;
 
 namespace ControlsLibrary.Model
 {
-    public class EditableFa
+    public class EditableAutomaton
     {
         private readonly ISet<long> usedStateIDs = new HashSet<long>();
 
-        // intended type `Dictionary<FaAnalyzerFactory<T>, T>` isn't representable in C# type system
+        // intended type `Dictionary<Func<EditableAutomaton, T>, T>` isn't representable in C# type system
         private readonly Dictionary<object, object> analyzers = new Dictionary<object, object>();
-        public IReadOnlyList<IFaComponent> Components { get; }
-        private readonly Dictionary<State, TransitionTable> transitions = new Dictionary<State, TransitionTable>();
-        public IReadOnlyDictionary<State, TransitionTable> Transitions => transitions;
+        public IReadOnlyList<IAutomatonComponent> Components { get; }
+        private readonly Dictionary<State, TransitionStorageFacade> transitions = new Dictionary<State, TransitionStorageFacade>();
+        public IReadOnlyDictionary<State, TransitionStorageFacade> Transitions => transitions;
         public IReadOnlyCollection<State> States => transitions.Keys;
         private readonly Dictionary<State, ISet<Transition>> incomingTransitions = new Dictionary<State, ISet<Transition>>();
 
@@ -23,7 +23,7 @@ namespace ControlsLibrary.Model
         public event ElementAdded<Transition> TransitionAdded;
         public event ElementRemoved<Transition> TransitionRemoved;
 
-        public EditableFa(IReadOnlyList<IFaComponent> components)
+        public EditableAutomaton(IReadOnlyList<IAutomatonComponent> components)
         {
             Components = components;
         }
@@ -35,7 +35,7 @@ namespace ControlsLibrary.Model
             usedStateIDs.Add(id);
             state.ID = id;
             state.Name ??= "S" + id;
-            transitions[state] = new TransitionTable(Components);
+            transitions[state] = new TransitionStorageFacade(Components);
             incomingTransitions[state] = new HashSet<Transition>();
             StateAdded?.Invoke(this, new ElementAddedEventArgs<State>(state));
         }
@@ -56,7 +56,7 @@ namespace ControlsLibrary.Model
                 source,
                 target,
                 Components.SelectMany(component => component.FilterDescriptors).ToList(),
-                Components.SelectMany(component => component.FilterDescriptors).ToList()
+                Components.SelectMany(component => component.SideEffectDescriptors).ToList()
             );
             transitions[source].AddTransition(transition);
             incomingTransitions[target].Add(transition);
@@ -71,7 +71,7 @@ namespace ControlsLibrary.Model
             TransitionRemoved?.Invoke(this, new ElementRemovedEventArgs<Transition>(transition));
         }
 
-        public T GetAnalyzer<T>(FaAnalyzerFactory<T> analyzerFactory)
+        public T GetAnalyzer<T>(Func<EditableAutomaton, T> analyzerFactory)
         {
             if (!analyzers.ContainsKey(analyzerFactory))
             {

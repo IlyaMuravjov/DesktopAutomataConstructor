@@ -2,7 +2,7 @@
 
 namespace ControlsLibrary.Model
 {
-    public interface IFaComponent
+    public interface IAutomatonComponent
     {
         public IReadOnlyList<IReadOnlyList<TransitionPropertyDescriptor>> FilterDescriptors { get; }
         public IReadOnlyList<IReadOnlyList<TransitionPropertyDescriptor>> SideEffectDescriptors { get; }
@@ -10,6 +10,6 @@ namespace ControlsLibrary.Model
         public bool IsReadyToTerminate { get; }
         public bool RequiresTermination { get; }
         public void TakeTransition(Transition transition);
-        public IFaComponent Copy();
+        public IAutomatonComponent Copy();
     }
 }

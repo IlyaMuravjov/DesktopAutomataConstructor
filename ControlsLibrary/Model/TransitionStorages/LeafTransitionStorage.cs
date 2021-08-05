@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using ControlsLibrary.Infrastructure;
 
-namespace ControlsLibrary.Model.TransitionCollections
+namespace ControlsLibrary.Model.TransitionStorages
 {
     public class LeafTransitionStorage : ITransitionStorage
     {
@@ -37,12 +37,6 @@ namespace ControlsLibrary.Model.TransitionCollections
         }
 
         public IReadOnlyCollection<Transition> GetPossibleTransitions(IReadOnlyList<object> filterValues, int propertyIndex)
-        {
-            Debug.Assert(filterValues.Count == propertyIndex);
-            return transitions;
-        }
-
-        public IReadOnlyCollection<Transition> GetTransitionsWithExactFilters(IReadOnlyList<object> filterValues, int propertyIndex)
         {
             Debug.Assert(filterValues.Count == propertyIndex);
             return transitions;
