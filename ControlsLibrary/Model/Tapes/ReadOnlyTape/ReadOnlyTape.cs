@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using ControlsLibrary.Model.TransitionProperty;
 
 namespace ControlsLibrary.Model.Tapes.ReadOnlyTape
 {
@@ -7,7 +8,7 @@ namespace ControlsLibrary.Model.Tapes.ReadOnlyTape
         private bool EndReached => Data.Count == Position;
         public override bool IsReadyToTerminate => EndReached;
         public override bool RequiresTermination => EndReached;
-        public override IReadOnlyList<IReadOnlyList<TransitionPropertyDescriptor>> SideEffectDescriptors => new TransitionPropertyDescriptor[][] { };
+        public override IReadOnlyList<IReadOnlyList<ITransitionPropertyDescriptor>> SideEffectDescriptors => new ITransitionPropertyDescriptor[][] { };
 
         public ReadOnlyTape()
         {
@@ -19,7 +20,7 @@ namespace ControlsLibrary.Model.Tapes.ReadOnlyTape
 
         public override void TakeTransition(Transition transition)
         {
-            if (transition[ExpectedChar] != null)
+            if (transition.Get(ExpectedChar) != null)
             {
                 Position++;
             }

@@ -46,7 +46,7 @@ namespace ControlsLibrary.Model.Converters
 
                 foreach (var grouping in sourceStates
                     .SelectMany(state => nfa.Transitions[state].Transitions)
-                    .GroupBy(transition => transition[tape.ExpectedChar])
+                    .GroupBy(transition => transition.Get(tape.ExpectedChar))
                 )
                 {
                     if (grouping.Key == null)
@@ -70,7 +70,7 @@ namespace ControlsLibrary.Model.Converters
                     }
 
                     var newTransition = dfa.AddTransition(source, target);
-                    newTransition[tape.ExpectedChar] = expectedChar;
+                    newTransition.Set(tape.ExpectedChar, expectedChar);
                 }
             }
 

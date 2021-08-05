@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ControlsLibrary.Model.TransitionProperty;
 
 namespace ControlsLibrary.Model.TransitionStorages
 {
@@ -14,9 +15,9 @@ namespace ControlsLibrary.Model.TransitionStorages
 
         public event EventHandler<EventArgs> BecomeEmpty;
 
-        public void AddTransition(Transition transition, IReadOnlyList<TransitionProperty> filterProperties, int propertyIndex);
+        public void AddTransition(Transition transition, IReadOnlyList<ITransitionProperty> filterProperties, int propertyIndex);
 
-        public void RemoveTransition(Transition transition, IReadOnlyList<TransitionProperty> filterProperties, int propertyIndex);
+        public void RemoveTransition(Transition transition, IReadOnlyList<ITransitionProperty> filterProperties, int propertyIndex);
 
         public IReadOnlyCollection<Transition> GetPossibleTransitions(IReadOnlyList<object> filterValues, int propertyIndex);
     }

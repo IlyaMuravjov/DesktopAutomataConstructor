@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using ControlsLibrary.Infrastructure;
+using ControlsLibrary.Model.TransitionProperty;
+using ControlsLibrary.Model.TransitionProperty.Generic;
+using ControlsLibrary.Model.TransitionProperty.Impl;
 
 namespace ControlsLibrary.Model.Tapes
 {
@@ -15,10 +18,10 @@ namespace ControlsLibrary.Model.Tapes
             set => Set(ref position, value);
         }
 
-        public IReadOnlyList<IReadOnlyList<TransitionPropertyDescriptor>> FilterDescriptors => new[] { new [] { ExpectedChar } };
-        public abstract IReadOnlyList<IReadOnlyList<TransitionPropertyDescriptor>> SideEffectDescriptors { get; }
+        public IReadOnlyList<IReadOnlyList<ITransitionPropertyDescriptor>> FilterDescriptors => new[] { new [] { ExpectedChar } };
+        public abstract IReadOnlyList<IReadOnlyList<ITransitionPropertyDescriptor>> SideEffectDescriptors { get; }
         public IReadOnlyList<IReadOnlyList<object>> CurrentFilters => new[] {new object[] {Data[Position]}};
-        public TransitionPropertyDescriptor ExpectedChar { get; } = new TransitionPropertyDescriptor(typeof(char?), null);
+        public ITransitionPropertyDescriptor<char?> ExpectedChar { get; } = new TransitionPropertyDescriptor<char?>(null);
         public abstract bool IsReadyToTerminate { get; }
         public abstract bool RequiresTermination { get; }
 

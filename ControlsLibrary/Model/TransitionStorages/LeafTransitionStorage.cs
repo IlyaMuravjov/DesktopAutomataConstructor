@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using ControlsLibrary.Infrastructure;
+using ControlsLibrary.Model.TransitionProperty;
 
 namespace ControlsLibrary.Model.TransitionStorages
 {
@@ -20,13 +21,13 @@ namespace ControlsLibrary.Model.TransitionStorages
 
         public event EventHandler<EventArgs> BecomeEmpty;
 
-        public void AddTransition(Transition transition, IReadOnlyList<TransitionProperty> filterProperties, int propertyIndex)
+        public void AddTransition(Transition transition, IReadOnlyList<ITransitionProperty> filterProperties, int propertyIndex)
         {
             Debug.Assert(filterProperties.Count == propertyIndex);
             transitions.Add(transition);
         }
 
-        public void RemoveTransition(Transition transition, IReadOnlyList<TransitionProperty> filterProperties, int propertyIndex)
+        public void RemoveTransition(Transition transition, IReadOnlyList<ITransitionProperty> filterProperties, int propertyIndex)
         {
             Debug.Assert(filterProperties.Count == propertyIndex);
             transitions.Remove(transition);

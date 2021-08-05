@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ControlsLibrary.Model.TransitionProperty;
 
 namespace ControlsLibrary.Model.TransitionStorages
 {
@@ -28,10 +29,10 @@ namespace ControlsLibrary.Model.TransitionStorages
 
         public event EventHandler<EventArgs> BecomeEmpty;
 
-        public void AddTransition(Transition transition, IReadOnlyList<TransitionProperty> filterProperties, int propertyIndex) =>
+        public void AddTransition(Transition transition, IReadOnlyList<ITransitionProperty> filterProperties, int propertyIndex) =>
             GetOrCreateSubStorage(filterProperties[propertyIndex].Value).AddTransition(transition, filterProperties, propertyIndex + 1);
 
-        public void RemoveTransition(Transition transition, IReadOnlyList<TransitionProperty> filterProperties, int propertyIndex)
+        public void RemoveTransition(Transition transition, IReadOnlyList<ITransitionProperty> filterProperties, int propertyIndex)
         {
             GetSubStorage(filterProperties[propertyIndex].Value)?.RemoveTransition(transition, filterProperties, propertyIndex + 1);
             if (IsEmpty)
@@ -48,7 +49,7 @@ namespace ControlsLibrary.Model.TransitionStorages
                 ? epsilonTransitions
                 : epsilonTransitions.Concat(subStorage.GetPossibleTransitions(filterValues, propertyIndex + 1)).ToHashSet();
         }
-        
+
         private ITransitionStorage GetSubStorage(object filterValue) =>
             filterValue == null ? epsilonSubStorage :
             subStorages.ContainsKey(filterValue) ? subStorages[filterValue] :

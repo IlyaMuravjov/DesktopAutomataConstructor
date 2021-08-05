@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using ControlsLibrary.Model.TransitionProperty;
 
 namespace ControlsLibrary.Model
 {
     public interface IAutomatonComponent
     {
-        public IReadOnlyList<IReadOnlyList<TransitionPropertyDescriptor>> FilterDescriptors { get; }
-        public IReadOnlyList<IReadOnlyList<TransitionPropertyDescriptor>> SideEffectDescriptors { get; }
+        public IReadOnlyList<IReadOnlyList<ITransitionPropertyDescriptor>> FilterDescriptors { get; }
+        public IReadOnlyList<IReadOnlyList<ITransitionPropertyDescriptor>> SideEffectDescriptors { get; }
         public IReadOnlyList<IReadOnlyList<object>> CurrentFilters { get; }
         public bool IsReadyToTerminate { get; }
         public bool RequiresTermination { get; }
