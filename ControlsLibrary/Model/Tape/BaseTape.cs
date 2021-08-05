@@ -1,6 +1,6 @@
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using ControlsLibrary.Infrastructure;
-using ControlsLibrary.Model.SimpleImpl;
 
 namespace ControlsLibrary.Model.Tape
 {
@@ -15,9 +15,10 @@ namespace ControlsLibrary.Model.Tape
             set => Set(ref position, value);
         }
 
-        public ITransitionFilter DefaultFilter => new CharTransitionFilter();
-        public abstract ITransitionSideEffect DefaultSideEffect { get; }
-        public ITransitionFilter CurrentFilter => new CharTransitionFilter {ExpectedChar = Data[position]};
+        public IReadOnlyList<IReadOnlyList<TransitionPropertyDescriptor>> FilterDescriptors => new[] { new [] { ExpectedChar } };
+        public abstract IReadOnlyList<IReadOnlyList<TransitionPropertyDescriptor>> SideEffectDescriptors { get; }
+        public IReadOnlyList<IReadOnlyList<object>> CurrentFilters => new[] {new object[] {Data[Position]}};
+        public TransitionPropertyDescriptor ExpectedChar { get; } = new TransitionPropertyDescriptor(typeof(char?), null);
         public abstract bool IsReadyToTerminate { get; }
         public abstract bool RequiresTermination { get; }
 
@@ -33,7 +34,7 @@ namespace ControlsLibrary.Model.Tape
             Position = other.Position;
         }
 
-        public abstract void TakeTransition(TransitionComponent transition);
+        public abstract void TakeTransition(Transition transition);
         public abstract IFaComponent Copy();
     }
 }

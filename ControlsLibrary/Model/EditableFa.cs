@@ -53,10 +53,10 @@ namespace ControlsLibrary.Model
         public Transition AddTransition(State source, State target)
         {
             var transition = new Transition(
-                source, target,
-                Components
-                    .Select(component => new TransitionComponent(component.DefaultFilter, component.DefaultSideEffect))
-                    .ToList()
+                source,
+                target,
+                Components.SelectMany(component => component.FilterDescriptors).ToList(),
+                Components.SelectMany(component => component.FilterDescriptors).ToList()
             );
             transitions[source].AddTransition(transition);
             incomingTransitions[target].Add(transition);

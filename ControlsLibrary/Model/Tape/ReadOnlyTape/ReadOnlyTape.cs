@@ -1,4 +1,4 @@
-using ControlsLibrary.Model.SimpleImpl;
+using System.Collections.Generic;
 
 namespace ControlsLibrary.Model.Tape.ReadOnlyTape
 {
@@ -7,7 +7,7 @@ namespace ControlsLibrary.Model.Tape.ReadOnlyTape
         private bool EndReached => Data.Count == Position;
         public override bool IsReadyToTerminate => EndReached;
         public override bool RequiresTermination => EndReached;
-        public override ITransitionSideEffect DefaultSideEffect => EmptyTransitionSideEffect.Instance;
+        public override IReadOnlyList<IReadOnlyList<TransitionPropertyDescriptor>> SideEffectDescriptors => new TransitionPropertyDescriptor[][] { };
 
         public ReadOnlyTape()
         {
@@ -17,9 +17,9 @@ namespace ControlsLibrary.Model.Tape.ReadOnlyTape
         {
         }
 
-        public override void TakeTransition(TransitionComponent transition)
+        public override void TakeTransition(Transition transition)
         {
-            if (((CharTransitionFilter) transition.Filter).ExpectedChar != null)
+            if (transition[ExpectedChar] != null)
             {
                 Position++;
             }

@@ -15,23 +15,20 @@ namespace ControlsLibrary.Model.TransitionCollections
         public IReadOnlyCollection<Transition> Transitions => transitions;
 
         public IReadOnlyCollection<Transition> EpsilonTransitions => transitions
-            .Where(
-                transition => transition.Components.All(component =>
-                    component.SideEffect.Properties.Flatten().All(prop => prop.Value == null)
-                )
-            ).ToHashSet();
+            .Where(transition => transition.SideEffects.Flatten().All(sideEffect => sideEffect.Value == null))
+            .ToHashSet();
 
         public event EventHandler<EventArgs> BecomeEmpty;
 
-        public void AddTransition(Transition transition, IReadOnlyList<Property> filterProperties, int propertyIndex)
+        public void AddTransition(Transition transition, IReadOnlyList<TransitionProperty> filterProperties, int propertyIndex)
         {
-            AssertAllFilterPropertiesHandled(filterProperties, propertyIndex);
+            Debug.Assert(filterProperties.Count == propertyIndex);
             transitions.Add(transition);
         }
 
-        public void RemoveTransition(Transition transition, IReadOnlyList<Property> filterProperties, int propertyIndex)
+        public void RemoveTransition(Transition transition, IReadOnlyList<TransitionProperty> filterProperties, int propertyIndex)
         {
-            AssertAllFilterPropertiesHandled(filterProperties, propertyIndex);
+            Debug.Assert(filterProperties.Count == propertyIndex);
             transitions.Remove(transition);
             if (IsEmpty)
             {
@@ -39,19 +36,16 @@ namespace ControlsLibrary.Model.TransitionCollections
             }
         }
 
-        public IReadOnlyCollection<Transition> GetPossibleTransitions(IReadOnlyList<Property> filterProperties, int propertyIndex)
+        public IReadOnlyCollection<Transition> GetPossibleTransitions(IReadOnlyList<object> filterValues, int propertyIndex)
         {
-            AssertAllFilterPropertiesHandled(filterProperties, propertyIndex);
+            Debug.Assert(filterValues.Count == propertyIndex);
             return transitions;
         }
 
-        public IReadOnlyCollection<Transition> GetTransitionsWithExactFilters(IReadOnlyList<Property> filterProperties, int propertyIndex)
+        public IReadOnlyCollection<Transition> GetTransitionsWithExactFilters(IReadOnlyList<object> filterValues, int propertyIndex)
         {
-            AssertAllFilterPropertiesHandled(filterProperties, propertyIndex);
+            Debug.Assert(filterValues.Count == propertyIndex);
             return transitions;
         }
-
-        private static void AssertAllFilterPropertiesHandled(IReadOnlyList<Property> filterProperties, int propertyIndex) =>
-            Debug.Assert(filterProperties.Count == propertyIndex);
     }
 }

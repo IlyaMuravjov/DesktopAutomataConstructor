@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using ControlsLibrary.Model.Analyzers;
-using ControlsLibrary.Model.SimpleImpl;
 using ControlsLibrary.Model.Tape.ReadOnlyTape;
 using GraphX.Common;
 
@@ -17,6 +16,7 @@ namespace ControlsLibrary.Model.Converter
         public EditableFa Convert(EditableFa nfa)
         {
             Debug.Assert(IsCompatibleWithComponents(nfa.Components));
+            var tape = (ReadOnlyTape) nfa.Components[0];
             if (!nfa.IsExecutable() || nfa.GetNonDeterministicStates().Count == 0)
             {
                 throw new InvalidOperationException(); // TODO error message
@@ -46,7 +46,8 @@ namespace ControlsLibrary.Model.Converter
 
                 foreach (var grouping in sourceStates
                     .SelectMany(state => nfa.Transitions[state].Transitions)
-                    .GroupBy(transition => ((CharTransitionFilter) transition.Components[0].Filter).ExpectedChar))
+                    .GroupBy(transition => transition[tape.ExpectedChar])
+                )
                 {
                     if (grouping.Key == null)
                     {
@@ -69,7 +70,7 @@ namespace ControlsLibrary.Model.Converter
                     }
 
                     var newTransition = dfa.AddTransition(source, target);
-                    ((CharTransitionFilter) newTransition.Components[0].Filter).ExpectedChar = expectedChar;
+                    newTransition[tape.ExpectedChar] = expectedChar;
                 }
             }
 

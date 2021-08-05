@@ -12,13 +12,14 @@ namespace ControlsLibrary.Model.TransitionCollections
 
         public TransitionTable(IReadOnlyList<IFaComponent> components)
         {
-            transitionStorage =
-                FlattenFilterProperties(components.Select(component => component.DefaultFilter))
-                    .Aggregate(
-                        (Func<ITransitionStorage>) (() => new LeafTransitionStorage()),
-                        (storageFactory, expectedValue) => () => new BranchTransitionStorage(storageFactory)
-                    )
-                    .Invoke();
+            transitionStorage = components
+                .SelectMany(component => component.FilterDescriptors)
+                .Flatten()
+                .Aggregate(
+                    (Func<ITransitionStorage>) (() => new LeafTransitionStorage()),
+                    (storageFactory, expectedValue) => () => new BranchTransitionStorage(storageFactory)
+                )
+                .Invoke();
         }
 
         public bool IsDeterministic => transitionStorage.IsDeterministic;
@@ -39,8 +40,8 @@ namespace ControlsLibrary.Model.TransitionCollections
         public void AddTransition(Transition transition)
         {
             DoAddTransition(transition);
-            transition.FilterModifying += (sender, e) => DoRemoveTransition(transition);
-            transition.FilterModified += (sender, e) =>
+            transition.FilterChanging += (sender, e) => DoRemoveTransition(transition);
+            transition.FilterChanged += (sender, e) =>
             {
                 DoAddTransition(transition);
                 TransitionFilterModified?.Invoke(this, e);
@@ -50,7 +51,7 @@ namespace ControlsLibrary.Model.TransitionCollections
 
         private void DoAddTransition(Transition transition)
         {
-            transitionStorage.AddTransition(transition, FlattenFilterProperties(transition), 0);
+            transitionStorage.AddTransition(transition, transition.Filters.Flatten().ToList(), 0);
         }
 
         // TODO maybe return bool
@@ -62,21 +63,15 @@ namespace ControlsLibrary.Model.TransitionCollections
 
         private void DoRemoveTransition(Transition transition)
         {
-            transitionStorage.RemoveTransition(transition, FlattenFilterProperties(transition), 0);
+            transitionStorage.RemoveTransition(transition, transition.Filters.Flatten().ToList(), 0);
         }
 
         // if we ask for (1,0,0) then (1, null (epsilon), 0) will suffice
-        public IReadOnlyCollection<Transition> GetPossibleTransitions(IReadOnlyList<ITransitionFilter> filters) =>
-            transitionStorage.GetPossibleTransitions(FlattenFilterProperties(filters), 0);
+        public IReadOnlyCollection<Transition> GetPossibleTransitions(IReadOnlyList<IFaComponent> components) =>
+            transitionStorage.GetPossibleTransitions(components.SelectMany(component => component.CurrentFilters).Flatten().ToList(), 0);
 
         // if we ask for (1,0,0) then (1, null (epsilon), 0) won't suffice
-        public IReadOnlyCollection<Transition> GetTransitionsWithExactFilters(IReadOnlyList<ITransitionFilter> filters) =>
-            transitionStorage.GetTransitionsWithExactFilters(FlattenFilterProperties(filters), 0);
-
-        private static List<Property> FlattenFilterProperties(Transition transition) =>
-            FlattenFilterProperties(transition.Components.Select(component => component.Filter));
-
-        private static List<Property> FlattenFilterProperties(IEnumerable<ITransitionFilter> filters) =>
-            filters.SelectMany(filter => filter.Properties.Flatten()).ToList();
+        public IReadOnlyCollection<Transition> GetTransitionsWithExactFilters(IReadOnlyList<IFaComponent> components) =>
+            transitionStorage.GetTransitionsWithExactFilters(components.SelectMany(component => component.CurrentFilters).Flatten().ToList(), 0);
     }
 }

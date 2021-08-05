@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ControlsLibrary.Model.Tape.ReadWriteTape
 {
     public class ReadWriteTape : BaseTape
     {
-        public override ITransitionSideEffect DefaultSideEffect => new ReadWriteTapeTransitionSideEffect();
         public override bool IsReadyToTerminate => true;
         public override bool RequiresTermination => false;
+        public TransitionPropertyDescriptor NewChar { get; } = new TransitionPropertyDescriptor(typeof(char?), null);
+        public TransitionPropertyDescriptor HeadMove { get; } = new TransitionPropertyDescriptor(typeof(HeadMoveEnum), HeadMoveEnum.Right);
+        public override IReadOnlyList<IReadOnlyList<TransitionPropertyDescriptor>> SideEffectDescriptors => new[] {new[] {NewChar}, new[] {HeadMove}};
 
         public ReadWriteTape()
         {
@@ -16,15 +19,14 @@ namespace ControlsLibrary.Model.Tape.ReadWriteTape
         {
         }
 
-        public override void TakeTransition(TransitionComponent transition)
+        public override void TakeTransition(Transition transition)
         {
-            var sideEffect = (ReadWriteTapeTransitionSideEffect) transition.SideEffect;
-            if (sideEffect.NewChar != null)
+            if (transition[NewChar] != null)
             {
-                Data[Position] = (char) sideEffect.NewChar;
+                Data[Position] = (char) transition[NewChar];
             }
 
-            switch (sideEffect.HeadMove)
+            switch (transition[HeadMove])
             {
                 case null:
                     break;

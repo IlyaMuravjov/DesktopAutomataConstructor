@@ -55,9 +55,7 @@ namespace ControlsLibrary.Model
         public void TakeTransition(Transition transition)
         {
             State = transition.Target;
-            Components
-                .Zip(transition.Components)
-                .ForEach(elm => elm.First.TakeTransition(elm.Second));
+            Components.ForEach(component => component.TakeTransition(transition));
             UpdateStatus();
         }
 

@@ -52,8 +52,7 @@ namespace ControlsLibrary.Model
             runningFAs.ForEach(fa => fa.State.IsCurrent = false);
             runningFAs.ForEach(fa =>
             {
-                var transitions = editableFa.Transitions[fa.State]
-                    .GetPossibleTransitions(fa.Components.Select(component => component.CurrentFilter).ToList());
+                var transitions = editableFa.Transitions[fa.State].GetPossibleTransitions(fa.Components);
                 if (transitions.Count == 0)
                 {
                     fa.GoToFailedState();

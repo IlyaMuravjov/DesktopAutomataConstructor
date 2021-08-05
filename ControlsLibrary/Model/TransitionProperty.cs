@@ -1,11 +1,12 @@
 using System;
+using ControlsLibrary.Infrastructure;
 
-namespace ControlsLibrary.Infrastructure
+namespace ControlsLibrary.Model
 {
-    public class Property : BaseNotifyPropertyChanged
+    public class TransitionProperty : BaseNotifyPropertyChanged
     {
-        public Type Type { get; }
-        private object value = null;
+        public TransitionPropertyDescriptor Descriptor { get; }
+        private object value;
 
         public object Value
         {
@@ -21,9 +22,10 @@ namespace ControlsLibrary.Infrastructure
         public event EventHandler<EventArgs> ValueChanging;
         public event EventHandler<EventArgs> ValueChanged;
 
-        public Property(Type type)
+        public TransitionProperty(TransitionPropertyDescriptor descriptor)
         {
-            Type = type;
+            Descriptor = descriptor;
+            Value = descriptor.DefaultValue;
         }
     }
 }

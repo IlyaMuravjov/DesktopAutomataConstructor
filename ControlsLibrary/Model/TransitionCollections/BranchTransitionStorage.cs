@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ControlsLibrary.Infrastructure;
 
 namespace ControlsLibrary.Model.TransitionCollections
 {
@@ -29,44 +28,44 @@ namespace ControlsLibrary.Model.TransitionCollections
 
         public event EventHandler<EventArgs> BecomeEmpty;
 
-        public void AddTransition(Transition transition, IReadOnlyList<Property> filterProperties, int propertyIndex) =>
-            GetOrCreateSubStorage(filterProperties[propertyIndex]).AddTransition(transition, filterProperties, propertyIndex + 1);
+        public void AddTransition(Transition transition, IReadOnlyList<TransitionProperty> filterProperties, int propertyIndex) =>
+            GetOrCreateSubStorage(filterProperties[propertyIndex].Value).AddTransition(transition, filterProperties, propertyIndex + 1);
 
-        public void RemoveTransition(Transition transition, IReadOnlyList<Property> filterProperties, int propertyIndex)
+        public void RemoveTransition(Transition transition, IReadOnlyList<TransitionProperty> filterProperties, int propertyIndex)
         {
-            GetSubStorage(filterProperties[propertyIndex])?.RemoveTransition(transition, filterProperties, propertyIndex + 1);
+            GetSubStorage(filterProperties[propertyIndex].Value)?.RemoveTransition(transition, filterProperties, propertyIndex + 1);
             if (IsEmpty)
             {
                 BecomeEmpty?.Invoke(this, new EventArgs());
             }
         }
 
-        public IReadOnlyCollection<Transition> GetPossibleTransitions(IReadOnlyList<Property> filterProperties, int propertyIndex)
+        public IReadOnlyCollection<Transition> GetPossibleTransitions(IReadOnlyList<object> filterValues, int propertyIndex)
         {
-            var epsilonTransitions = epsilonSubStorage.GetPossibleTransitions(filterProperties, propertyIndex + 1);
-            var subStorage = GetSubStorage(filterProperties[propertyIndex]);
+            var epsilonTransitions = epsilonSubStorage.GetPossibleTransitions(filterValues, propertyIndex + 1);
+            var subStorage = GetSubStorage(filterValues[propertyIndex]);
             return subStorage == null
                 ? epsilonTransitions
-                : epsilonTransitions.Concat(subStorage.GetPossibleTransitions(filterProperties, propertyIndex + 1)).ToHashSet();
+                : epsilonTransitions.Concat(subStorage.GetPossibleTransitions(filterValues, propertyIndex + 1)).ToHashSet();
         }
 
 
-        public IReadOnlyCollection<Transition> GetTransitionsWithExactFilters(IReadOnlyList<Property> filterProperties, int propertyIndex) =>
-            GetSubStorage(filterProperties[propertyIndex])?.GetTransitionsWithExactFilters(filterProperties, propertyIndex + 1) ?? new HashSet<Transition>();
+        public IReadOnlyCollection<Transition> GetTransitionsWithExactFilters(IReadOnlyList<object> filterValues, int propertyIndex) =>
+            GetSubStorage(filterValues[propertyIndex])?.GetTransitionsWithExactFilters(filterValues, propertyIndex + 1) ?? new HashSet<Transition>();
 
-        private ITransitionStorage GetSubStorage(Property filterProperty) =>
-            filterProperty.Value == null ? epsilonSubStorage :
-            subStorages.ContainsKey(filterProperty.Value) ? subStorages[filterProperty.Value] :
+        private ITransitionStorage GetSubStorage(object filterValue) =>
+            filterValue == null ? epsilonSubStorage :
+            subStorages.ContainsKey(filterValue) ? subStorages[filterValue] :
             null;
 
-        private ITransitionStorage GetOrCreateSubStorage(Property filterProperty)
+        private ITransitionStorage GetOrCreateSubStorage(object filterValue)
         {
-            var subStorage = GetSubStorage(filterProperty);
+            var subStorage = GetSubStorage(filterValue);
             if (subStorage == null)
             {
                 subStorage = subStorageFactory();
-                subStorages[filterProperty.Value] = subStorage;
-                subStorage.BecomeEmpty += (sender, e) => subStorages.Remove(filterProperty.Value);
+                subStorages[filterValue] = subStorage;
+                subStorage.BecomeEmpty += (sender, e) => subStorages.Remove(filterValue);
             }
 
             return subStorage;
