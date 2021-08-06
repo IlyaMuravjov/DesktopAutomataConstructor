@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using ControlsLibrary.Model.Components;
+using ControlsLibrary.Model.Modules;
 using ControlsLibrary.Model.Tapes.ReadOnlyTape;
 using GraphX.Common;
 

@@ -3,7 +3,7 @@ using System.Linq;
 using ControlsLibrary.Infrastructure;
 using GraphX.Common;
 
-namespace ControlsLibrary.Model.Components.Executor
+namespace ControlsLibrary.Model.Modules.Executor
 {
     public class AutomatonComputationPath : BaseNotifyPropertyChanged
     {

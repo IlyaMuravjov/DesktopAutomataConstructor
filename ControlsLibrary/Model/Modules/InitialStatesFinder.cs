@@ -1,4 +1,4 @@
-namespace ControlsLibrary.Model.Components
+namespace ControlsLibrary.Model.Modules
 {
     public class InitialStatesFinder : BaseStateFinder
     {

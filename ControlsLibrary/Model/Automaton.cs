@@ -11,7 +11,7 @@ namespace ControlsLibrary.Model
         private readonly ISet<long> usedStateIDs = new HashSet<long>();
 
         // intended type `Dictionary<Func<Automaton, T>, T>` isn't representable in C# type system
-        private readonly Dictionary<object, object> components = new Dictionary<object, object>();
+        private readonly Dictionary<object, object> modules = new Dictionary<object, object>();
         public IReadOnlyList<IAutomatonMemory> MemoryList { get; }
         private readonly Dictionary<State, TransitionStorageFacade> transitions = new Dictionary<State, TransitionStorageFacade>();
         public IReadOnlyDictionary<State, TransitionStorageFacade> Transitions => transitions;
@@ -71,14 +71,14 @@ namespace ControlsLibrary.Model
             TransitionRemoved?.Invoke(this, new ElementRemovedEventArgs<Transition>(transition));
         }
 
-        public T GetComponent<T>(Func<Automaton, T> componentFactory)
+        public T GetModule<T>(Func<Automaton, T> moduleFactory)
         {
-            if (!components.ContainsKey(componentFactory))
+            if (!modules.ContainsKey(moduleFactory))
             {
-                components[componentFactory] = componentFactory(this);
+                modules[moduleFactory] = moduleFactory(this);
             }
 
-            return (T) components[componentFactory];
+            return (T) modules[moduleFactory];
         }
     }
 }

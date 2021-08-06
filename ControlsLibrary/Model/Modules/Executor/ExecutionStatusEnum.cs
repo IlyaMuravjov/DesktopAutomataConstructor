@@ -1,4 +1,4 @@
-﻿namespace ControlsLibrary.Model.Components.Executor
+﻿namespace ControlsLibrary.Model.Modules.Executor
 {
     public enum ExecutionStatusEnum
     {

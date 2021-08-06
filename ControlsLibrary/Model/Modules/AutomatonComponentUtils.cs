@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using ControlsLibrary.Model.Components.Executor;
+using ControlsLibrary.Model.Modules.Executor;
 
-namespace ControlsLibrary.Model.Components
+namespace ControlsLibrary.Model.Modules
 {
     public static class AutomatonComponentUtils
     {
@@ -9,15 +9,15 @@ namespace ControlsLibrary.Model.Components
             automaton.GetInitialStates().Count > 0 && automaton.GetFinalStates().Count > 0;
 
         public static AutomatonExecutor GetExecutor(this Automaton automaton) =>
-            automaton.GetComponent(AutomatonExecutor.Create);
+            automaton.GetModule(AutomatonExecutor.Create);
 
         public static IReadOnlyCollection<State> GetInitialStates(this Automaton automaton) =>
-            automaton.GetComponent(InitialStatesFinder.Create).MatchingStates;
+            automaton.GetModule(InitialStatesFinder.Create).MatchingStates;
 
         public static IReadOnlyCollection<State> GetFinalStates(this Automaton automaton) =>
-            automaton.GetComponent(FinalStatesFinder.Create).MatchingStates;
+            automaton.GetModule(FinalStatesFinder.Create).MatchingStates;
 
         public static IReadOnlyCollection<State> GetNonDeterministicStates(this Automaton automaton) =>
-            automaton.GetComponent(NondeterministicStatesFinder.Create).MatchingStates;
+            automaton.GetModule(NondeterministicStatesFinder.Create).MatchingStates;
     }
 }

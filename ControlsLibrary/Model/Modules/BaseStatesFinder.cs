@@ -3,7 +3,7 @@ using System.Linq;
 using ControlsLibrary.Infrastructure.Events;
 using GraphX.Common;
 
-namespace ControlsLibrary.Model.Components
+namespace ControlsLibrary.Model.Modules
 {
     public abstract class BaseStateFinder
     {
